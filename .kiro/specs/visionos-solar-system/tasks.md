@@ -487,6 +487,135 @@
   - Consider different colors or styles for each selected planet (optional)
   - _Requirements: 4.2, 5.6_
 
+- [ ] 21. Implement realistic orbital plane inclinations
+- [ ] 21.1 Research and document actual orbital inclinations
+  - Document each planet's orbital inclination relative to ecliptic plane
+  - Mercury: 7.0° (most inclined inner planet)
+  - Venus: 3.4°
+  - Earth: 0° (reference plane - ecliptic)
+  - Mars: 1.9°
+  - Jupiter: 1.3°
+  - Saturn: 2.5°
+  - Convert degrees to radians for implementation
+  - _Requirements: 1.4, 1.5_
+
+- [ ] 21.2 Update OrbitComponent to support 3D orbital plane orientation
+  - Add longitudeOfAscendingNode property (Float) - angle where orbit crosses ecliptic plane
+  - Keep existing inclination property for orbital tilt angle
+  - Add helper method to calculate 3D rotation quaternion from inclination and node
+  - Update initializer to accept both parameters
+  - _Requirements: 2.2_
+
+- [ ] 21.3 Implement 3D orbital plane rotation logic
+  - Update orbit position calculation in OrbitSystem or updateOrbits method
+  - First rotate orbit around Z-axis by longitudeOfAscendingNode
+  - Then rotate around X-axis by inclination angle
+  - Apply combined rotation to orbital position vector
+  - Ensure rotation order is correct (node first, then inclination)
+  - _Requirements: 2.3, 2.4, 2.5_
+
+- [ ] 21.4 Configure realistic orbital plane parameters for all planets
+  - Set inclination values based on astronomical data (converted to radians)
+  - Set longitudeOfAscendingNode values for visual variety (can use simplified values)
+  - Mercury: 7.0° inclination, 48.3° node
+  - Venus: 3.4° inclination, 76.7° node
+  - Earth: 0° inclination (reference), 0° node
+  - Mars: 1.9° inclination, 49.6° node
+  - Jupiter: 1.3° inclination, 100.5° node
+  - Saturn: 2.5° inclination, 113.7° node
+  - Test that planets no longer orbit in a flat plane
+  - _Requirements: 1.4, 1.5_
+
+- [ ] 21.5 Update orbit line generation to match 3D orbital planes
+  - Modify generateOrbitLine() to apply same rotation as orbital motion
+  - Apply longitudeOfAscendingNode rotation first
+  - Apply inclination rotation second
+  - Ensure orbit lines accurately represent 3D orbital paths
+  - Test that orbit lines match planet trajectories
+  - _Requirements: 1.4, 2.2_
+
+- [ ] 21.6 Add toggle for realistic vs. simplified orbital planes
+  - Add useRealisticOrbitalPlanes property to AppModel (Bool, default true)
+  - When false, use simplified flat plane with minimal inclination (current behavior)
+  - When true, use full 3D orbital plane orientation
+  - Add toggle control in UI settings
+  - Allow users to switch between modes for educational comparison
+  - _Requirements: 3.2, 6.1_
+
+- [ ] 22. Implement elliptical orbits
+- [ ] 22.1 Research and document orbital eccentricity values
+  - Document each planet's orbital eccentricity (0 = perfect circle, >0 = ellipse)
+  - Mercury: 0.206 (most eccentric)
+  - Venus: 0.007 (nearly circular)
+  - Earth: 0.017 (nearly circular)
+  - Mars: 0.093 (noticeably elliptical)
+  - Jupiter: 0.048
+  - Saturn: 0.056
+  - Note: All planets have low eccentricity, so ellipses are subtle
+  - _Requirements: 1.4, 1.5_
+
+- [ ] 22.2 Update OrbitComponent to support elliptical parameters
+  - Add eccentricity property (Float, 0.0 to 1.0) - shape of ellipse
+  - Add semiMajorAxis property (Float) - half the longest diameter of ellipse
+  - Add argumentOfPeriapsis property (Float) - rotation of ellipse in orbital plane
+  - Keep radius as semiMajorAxis for backward compatibility
+  - Update initializer with new parameters (default eccentricity = 0 for circular)
+  - _Requirements: 2.2_
+
+- [ ] 22.3 Implement elliptical orbit position calculation
+  - Replace circular orbit formula with elliptical orbit calculation
+  - Use parametric equations: r = a(1-e²)/(1+e·cos(θ))
+  - Calculate x = r·cos(θ), z = r·sin(θ) where θ is true anomaly
+  - Apply argumentOfPeriapsis rotation to orient ellipse in orbital plane
+  - Then apply existing 3D orbital plane rotations
+  - Ensure speed varies correctly (faster at perihelion, slower at aphelion - Kepler's 2nd law)
+  - _Requirements: 2.3, 2.4, 2.5_
+
+- [ ] 22.4 Adjust orbital speed for elliptical orbits (Kepler's 2nd Law)
+  - Implement variable angular velocity based on distance from Sun
+  - Use vis-viva equation or simplified approximation
+  - Speed should increase as planet approaches perihelion (closest point)
+  - Speed should decrease as planet approaches aphelion (farthest point)
+  - Maintain constant orbital period despite variable speed
+  - _Requirements: 2.3, 2.5, 3.5_
+
+- [ ] 22.5 Configure realistic eccentricity values for all planets
+  - Set eccentricity values based on astronomical data
+  - Set argumentOfPeriapsis values for proper ellipse orientation
+  - Mercury: e=0.206, ω=29.1°
+  - Venus: e=0.007, ω=54.9°
+  - Earth: e=0.017, ω=114.2°
+  - Mars: e=0.093, ω=286.5° (most visible ellipse)
+  - Jupiter: e=0.048, ω=273.9°
+  - Saturn: e=0.056, ω=339.4°
+  - Test that Mercury and Mars show visible elliptical paths
+  - _Requirements: 1.4, 1.5_
+
+- [ ] 22.6 Update orbit line generation for elliptical paths
+  - Modify generateOrbitLine() to create elliptical paths instead of circles
+  - Use same elliptical equations as orbital motion
+  - Generate more points for smooth ellipse rendering (128-256 points)
+  - Apply argumentOfPeriapsis and 3D orbital plane rotations
+  - Ensure orbit lines accurately represent elliptical trajectories
+  - _Requirements: 1.4, 2.2_
+
+- [ ] 22.7 Add toggle for circular vs. elliptical orbits
+  - Add useEllipticalOrbits property to AppModel (Bool, default true)
+  - When false, use circular orbits (eccentricity = 0)
+  - When true, use realistic elliptical orbits with actual eccentricity values
+  - Add toggle control in UI settings
+  - Allow users to switch between modes for educational comparison
+  - Update orbit lines to match current mode
+  - _Requirements: 3.2, 6.1_
+
+- [ ]* 22.8 Add visual indicators for perihelion and aphelion
+  - Add small marker entities at perihelion (closest) and aphelion (farthest) points
+  - Use different colors or symbols (e.g., red for perihelion, blue for aphelion)
+  - Show markers only when orbit lines are visible
+  - Add labels or tooltips explaining these orbital points
+  - Make markers optional via UI toggle
+  - _Requirements: 1.4, 5.2_
+
 ## Guide: Adding Reality Composer Pro Models
 
 ### Step 1: Create Models in Reality Composer Pro
