@@ -254,8 +254,23 @@
   - Scale rotation speeds to be visible and engaging at 1× time scale
   - _Requirements: 1.4, 1.5_
 
-- [ ] 13. Enhance planet information display
-- [ ] 13.1 Expand PlanetDataComponent with additional properties
+- [ ] 13. Position solar system for isometric viewing angle
+- [ ] 13.1 Update setupSolarSystem to position scene relative to user
+  - Position solar system root entity in front of user (e.g., 2-3 meters forward on Z-axis)
+  - Elevate solar system slightly below eye level (e.g., -0.5 to -0.8 meters on Y-axis)
+  - Apply rotation to tilt the orbital plane for isometric perspective (e.g., 30-45 degrees around X-axis)
+  - Ensure Sun and planets remain visible and centered in user's initial view
+  - _Requirements: 1.2, 1.3, 6.3_
+
+- [ ] 13.2 Test and adjust viewing angle for optimal experience
+  - Verify user can see the entire solar system without turning head
+  - Ensure orbital motion is clearly visible from default position
+  - Adjust height and distance based on comfort and visibility
+  - Test that selection and interaction still work correctly
+  - _Requirements: 4.5, 6.3_
+
+- [ ] 14. Enhance planet information display
+- [ ] 14.1 Expand PlanetDataComponent with additional properties
   - Add rotationPeriod property (string describing rotation period)
   - Add orbitalPeriod property (string describing orbital period)
   - Add diameter property (string describing planet diameter)
@@ -263,7 +278,7 @@
   - Add interestingFact property (string with educational fact)
   - _Requirements: 5.2, 5.3, 5.4_
 
-- [ ] 13.2 Update InfoPanelOrnament to display enhanced information
+- [ ] 14.2 Update InfoPanelOrnament to display enhanced information
   - Add row for rotation period
   - Add row for orbital period
   - Add row for diameter
@@ -272,7 +287,7 @@
   - Ensure layout remains clean and readable
   - _Requirements: 5.2, 5.3, 5.4, 5.5_
 
-- [ ] 13.3 Populate realistic data for all planets
+- [ ] 14.3 Populate realistic data for all planets
   - Mercury: rotation 58.6d, orbit 88d, diameter 4,879km, distance 57.9M km
   - Venus: rotation 243d (retrograde), orbit 225d, diameter 12,104km, distance 108.2M km
   - Earth: rotation 24h, orbit 365.25d, diameter 12,742km, distance 149.6M km
@@ -282,39 +297,234 @@
   - Add interesting facts for each planet
   - _Requirements: 5.2, 5.3, 5.4_
 
-- [ ] 14. Improve initial planet positioning
-- [ ] 14.1 Set realistic starting positions for planets
+- [ ] 15. Improve initial planet positioning
+- [ ] 15.1 Set realistic starting positions for planets
   - Calculate initial phase values to create visually interesting starting configuration
   - Ensure planets are distributed around the Sun (not all aligned)
   - Use astronomically inspired positions (e.g., based on a specific date)
   - Avoid overlapping planets in initial view
   - _Requirements: 1.4, 1.5_
 
-- [ ] 14.2 Add configuration for starting date/time
+- [ ] 15.2 Add configuration for starting date/time
   - Add optional startDate property to AppModel
   - Calculate initial orbital phases based on start date
   - Default to a visually appealing configuration if no date specified
   - _Requirements: 3.2_
 
-- [ ] 15. Fix UI visibility and accessibility issues
-- [ ] 15.1 Verify ornaments are visible in immersive space
+- [ ] 16. Add orbit line visualization
+- [ ] 16.1 Create OrbitLineComponent struct conforming to Component protocol
+  - Define isVisible property (Bool) to control orbit line visibility
+  - Define lineColor property (UIColor) for customizing orbit line appearance
+  - Define lineWidth property (Float) for line thickness
+  - Add initializer with default values (visible: false, color: white with low opacity, width: 0.002)
+  - _Requirements: 1.4, 1.5_
+
+- [ ] 16.2 Add orbit line toggle to AppModel
+  - Add showOrbitLines property (Bool, default false) to AppModel
+  - This will control global visibility of all orbit lines
+  - _Requirements: 3.2, 6.1_
+
+- [ ] 16.3 Implement orbit line generation function
+  - Create generateOrbitLine() function that takes radius and inclination parameters
+  - Generate circular path using multiple points (e.g., 64-128 points for smooth circle)
+  - Calculate 3D positions for each point: (radius × cos(angle), 0, radius × sin(angle))
+  - Apply inclination rotation to all points if non-zero
+  - Create line entity using custom mesh or multiple cylinder segments
+  - Apply semi-transparent material (e.g., white with 0.3 alpha)
+  - Return entity representing the orbit line
+  - _Requirements: 1.4, 2.2_
+
+- [ ] 16.4 Update createPlanetEntity to attach orbit lines
+  - Call generateOrbitLine() with planet's orbital radius and inclination
+  - Add orbit line entity as child of solar system scene (not planet entity)
+  - Attach OrbitLineComponent to orbit line entity
+  - Store reference to planet name in orbit line for association
+  - Set initial visibility based on AppModel.showOrbitLines
+  - _Requirements: 1.3, 1.4_
+
+- [ ] 16.5 Add orbit line visibility toggle to UI
+  - Add toggle switch to TimeControlOrnament or create separate view controls
+  - Bind toggle to AppModel.showOrbitLines
+  - Add label "Show Orbit Lines" or "Orbits" with SF Symbol icon (circle.dotted or similar)
+  - Apply .hoverEffect() to toggle for better interaction
+  - _Requirements: 3.2, 6.1, 6.2_
+
+- [ ] 16.6 Implement orbit line visibility update logic
+  - Create updateOrbitLineVisibility() method in ImmersiveView
+  - Query all entities with OrbitLineComponent
+  - Show/hide orbit lines based on AppModel.showOrbitLines
+  - Update ModelComponent opacity or isEnabled property
+  - Call this method when showOrbitLines changes
+  - _Requirements: 3.2, 6.3_
+
+- [ ]* 16.7 Add per-planet orbit line color customization (optional enhancement)
+  - Assign unique colors to each planet's orbit line for visual distinction
+  - Inner planets: warmer colors (Mercury: gray, Venus: yellow, Earth: blue, Mars: red)
+  - Outer planets: cooler colors (Jupiter: orange, Saturn: gold)
+  - Update generateOrbitLine() to accept color parameter
+  - _Requirements: 1.4, 1.5_
+
+- [ ] 17. Fix UI visibility and accessibility issues
+- [ ] 17.1 Verify ornaments are visible in immersive space
   - Test TimeControlOrnament visibility at bottom of scene
   - Test InfoPanelOrnament visibility when planet is selected
   - Add fallback UI if ornaments aren't visible in immersive mode
   - Consider adding controls to the main window instead of ornaments
   - _Requirements: 3.1, 6.3_
 
-- [ ] 15.2 Add visual debugging for simulation state
+- [ ] 17.2 Add visual debugging for simulation state
   - Add console logging for planet creation
   - Add console logging for update loop execution
   - Add visual indicator showing simulation is running (e.g., frame counter)
   - Verify planets are being created and positioned correctly
   - _Requirements: 7.1, 7.2_
 
-- [ ] 15.3 Create alternative control panel in main window
+- [ ] 17.3 Create alternative control panel in main window
   - Add time control UI to ContentView as fallback
   - Display current simulation speed in main window
   - Add play/pause button in main window
   - Show selected planet info in main window
   - Ensure controls work whether in immersive space or not
   - _Requirements: 3.1, 3.2, 6.1, 6.2_
+
+- [ ] 18. Replace sphere meshes with Reality Composer Pro models
+- [ ] 18.1 Create Reality Composer Pro project for planet models
+  - Open Reality Composer Pro
+  - Create a new project or scene file
+  - Import or create 3D models for each planet (Mercury, Venus, Earth, Mars, Jupiter, Saturn)
+  - Add realistic textures for each planet
+  - Export models to RealityKitContent bundle
+  - _Requirements: 1.3, 1.4_
+
+- [ ] 18.2 Update createPlanetEntity to load models from Reality Composer
+  - Replace MeshResource.generateSphere with Entity.load from RealityKitContent
+  - Load planet-specific models by name (e.g., "Mercury", "Earth", etc.)
+  - Maintain proper scaling based on size parameter
+  - Ensure collision shapes match model geometry
+  - Handle model loading errors gracefully
+  - _Requirements: 1.3, 7.1, 7.2_
+
+- [ ] 18.3 Update selection visual feedback for 3D models
+  - Add outline shader or ring around selected planet instead of color change
+  - Create a selection ring entity that orbits around selected planet
+  - Or add a pulsing scale animation for selected planets
+  - Ensure selection indicator works with textured models
+  - Test visibility of selection indicator against various backgrounds
+  - _Requirements: 4.2, 5.6_
+
+- [ ] 19. Implement planet size normalization mode
+- [ ] 19.1 Add size normalization toggle to AppModel
+  - Add isNormalizedSize property (Bool, default false)
+  - Add toggle control in ContentView simulation controls
+  - Add button or switch to enable/disable normalized sizes
+  - _Requirements: 3.2, 6.1_
+
+- [ ] 19.2 Implement size normalization logic
+  - Define normalized size range (e.g., 0.08 to 0.12 meters)
+  - Calculate normalized sizes that compress large planets and enlarge small ones
+  - Apply logarithmic or custom scaling to balance visibility
+  - Store both realistic and normalized sizes in planet configuration
+  - _Requirements: 1.4, 1.5_
+
+- [ ] 19.3 Update planet rendering to respect size mode
+  - Modify createPlanetEntity or add updatePlanetSizes method
+  - Switch between realistic and normalized sizes based on AppModel.isNormalizedSize
+  - Animate size transitions smoothly when toggling modes
+  - Update collision shapes to match current size
+  - Ensure orbital radii remain unchanged
+  - _Requirements: 1.4, 1.5, 3.2_
+
+- [ ] 19.4 Add visual indicator for normalization mode
+  - Display "Normalized Sizes" or "Realistic Sizes" label in UI
+  - Add tooltip explaining what normalization does
+  - Consider adding icon or badge to indicate current mode
+  - _Requirements: 6.1, 6.2_
+
+- [ ] 20. Implement multi-planet selection with volumetric info windows
+- [ ] 20.1 Update AppModel for multi-selection support
+  - Add selectedPlanets property (Set<String> or array) to track multiple selected planet names
+  - Add methods to add/remove planets from selection
+  - Keep existing selectedPlanet for backward compatibility or remove if not needed
+  - _Requirements: 5.1_
+
+- [ ] 20.2 Update selection logic to support multi-selection
+  - Modify handleEntityTap to toggle selection instead of replacing
+  - Allow multiple planets to have isSelected = true simultaneously
+  - Update SelectionSystem to support multi-selection if needed
+  - Ensure visual feedback works for all selected planets
+  - _Requirements: 4.3, 4.4, 5.1_
+
+- [ ] 20.3 Create PlanetInfoWindow SwiftUI view for volumetric windows
+  - Create new SwiftUI view for displaying planet information
+  - Accept PlanetData parameter
+  - Include planet name, type badge, and all attribute rows
+  - Add close button to dismiss the window and deselect planet
+  - Apply .glassBackgroundEffect() and appropriate styling
+  - Set fixed dimensions (e.g., 300pt width)
+  - _Requirements: 5.2, 5.3, 5.4, 5.5_
+
+- [ ] 20.4 Implement volumetric window spawning system
+  - Create WindowGroup with .volumetric style for planet info windows
+  - When planet is selected, open a new volumetric window for that planet
+  - Position windows in 3D space near the selected planet or at a fixed offset
+  - Support multiple windows open simultaneously (one per selected planet)
+  - Handle window dismissal and sync with planet selection state
+  - _Requirements: 5.1, 5.5, 6.3_
+
+- [ ] 20.5 Add window-to-planet association and lifecycle management
+  - Track which windows are open for which planets
+  - When window is closed, deselect the corresponding planet
+  - When planet is deselected, close its info window
+  - Ensure windows can be moved independently by user
+  - Consider adding visual connection line from window to planet (optional)
+  - _Requirements: 5.1, 5.5_
+
+- [ ] 20.6 Enhance visual selection markers for multi-selection
+  - Ensure all selected planets show clear visual indicators simultaneously
+  - Add persistent selection ring, outline, or glow effect
+  - Differentiate selection marker from hover effect
+  - Test that multiple selection markers are visible together
+  - Consider different colors or styles for each selected planet (optional)
+  - _Requirements: 4.2, 5.6_
+
+## Guide: Adding Reality Composer Pro Models
+
+### Step 1: Create Models in Reality Composer Pro
+1. Open **Reality Composer Pro** (included with Xcode)
+2. Create a new project or open your existing RealityKitContent package
+3. For each planet, either:
+   - Import existing 3D models (.usdz, .obj, .fbx)
+   - Create sphere primitives and apply planet textures
+4. Name each model clearly: "Mercury", "Venus", "Earth", etc.
+5. Apply realistic textures (you can find free planet textures online)
+6. Set appropriate scales in Reality Composer Pro
+7. Save the project
+
+### Step 2: Reference Models in Code
+Instead of:
+```swift
+let planetMesh = MeshResource.generateSphere(radius: size / 2)
+```
+
+Use:
+```swift
+let planetEntity = try await Entity(named: "Earth", in: realityKitContentBundle)
+planetEntity.scale = SIMD3<Float>(repeating: size)
+```
+
+### Step 3: Update Selection Indicator
+Since you can't easily change texture colors on complex models, use:
+- **Option A**: Add a glowing ring around the planet
+- **Option B**: Add a pulsing scale animation
+- **Option C**: Add an outline shader effect
+
+Example ring approach:
+```swift
+let ring = Entity()
+let ringMesh = MeshResource.generatePlane(width: size * 2, depth: size * 2)
+var ringMaterial = UnlitMaterial()
+ringMaterial.color = .init(tint: .cyan)
+ring.components[ModelComponent.self] = ModelComponent(mesh: ringMesh, materials: [ringMaterial])
+ring.orientation = simd_quatf(angle: .pi/2, axis: [1, 0, 0])
+planetEntity.addChild(ring)
+```
