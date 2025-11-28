@@ -273,7 +273,12 @@ class SelectionSystem {
                 type: planetDataComponent.type.rawValue,
                 radiusCategory: planetDataComponent.radiusCategory,
                 distanceCategory: planetDataComponent.distanceCategory,
-                orbitalPeriodCategory: planetDataComponent.orbitalPeriodCategory
+                orbitalPeriodCategory: planetDataComponent.orbitalPeriodCategory,
+                rotationPeriod: planetDataComponent.rotationPeriod,
+                orbitalPeriod: planetDataComponent.orbitalPeriod,
+                diameter: planetDataComponent.diameter,
+                distanceFromSun: planetDataComponent.distanceFromSun,
+                interestingFact: planetDataComponent.interestingFact
             )
         } else {
             // No entity selected, clear selected planet

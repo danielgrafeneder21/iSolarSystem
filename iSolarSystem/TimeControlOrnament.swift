@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-/// Time Control ornament UI for adjusting simulation speed
+/// Time Control window UI for adjusting simulation speed
 struct TimeControlOrnament: View {
     @Environment(AppModel.self) private var appModel
     
@@ -41,8 +41,23 @@ struct TimeControlOrnament: View {
                     .font(.caption)
                     .monospacedDigit()
             }
+            
+            // Orbit lines toggle button
+            VStack(spacing: 4) {
+                Button(action: {
+                    appModel.showOrbitLines.toggle()
+                }) {
+                    Image(systemName: appModel.showOrbitLines ? "circle.circle.fill" : "circle.dotted")
+                        .font(.title2)
+                }
+                .buttonStyle(.borderless)
+                .hoverEffect()
+                
+                Text("Orbits")
+                    .font(.caption2)
+            }
         }
-        .padding()
+        .padding(20)
         .glassBackgroundEffect()
     }
     

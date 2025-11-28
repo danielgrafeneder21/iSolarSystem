@@ -33,6 +33,9 @@ class AppModel {
     /// Currently selected planet for Info Panel display
     var selectedPlanet: PlanetData? = nil
     
+    /// Whether orbit lines should be visible for all planets
+    var showOrbitLines: Bool = false
+    
     // MARK: - System References
     
     /// Reference to OrbitSystem for update loop
@@ -48,4 +51,18 @@ class AppModel {
     
     /// Error that occurred during scene loading, if any
     var sceneLoadError: Error? = nil
+    
+    // MARK: - Initial Configuration
+    
+    /// Optional starting date for calculating initial planet positions
+    /// If nil, uses a visually appealing default configuration
+    var startDate: Date? = nil
+    
+    // MARK: - Debug Information
+    
+    /// Current frame rate for debugging
+    var currentFPS: Double = 0.0
+    
+    /// Total frame count for debugging
+    var totalFrameCount: Int = 0
 }

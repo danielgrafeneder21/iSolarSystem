@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-/// Info Panel ornament displaying detailed planet information
+/// Info Panel window displaying detailed planet information
 struct InfoPanelOrnament: View {
     let planetData: PlanetData
     
@@ -28,13 +28,34 @@ struct InfoPanelOrnament: View {
             
             Divider()
             
-            // Attribute rows
+            // Attribute rows - categories
             InfoRow(label: "Size", value: planetData.radiusCategory)
             InfoRow(label: "Distance", value: planetData.distanceCategory)
             InfoRow(label: "Orbit Speed", value: planetData.orbitalPeriodCategory)
+            
+            Divider()
+            
+            // Attribute rows - detailed information
+            InfoRow(label: "Rotation Period", value: planetData.rotationPeriod)
+            InfoRow(label: "Orbital Period", value: planetData.orbitalPeriod)
+            InfoRow(label: "Diameter", value: planetData.diameter)
+            InfoRow(label: "Distance from Sun", value: planetData.distanceFromSun)
+            
+            Divider()
+            
+            // Interesting fact section with different styling
+            VStack(alignment: .leading, spacing: 6) {
+                Text("Did You Know?")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .bold()
+                Text(planetData.interestingFact)
+                    .font(.caption2)
+                    .foregroundStyle(.primary)
+                    .italic()
+            }
         }
-        .padding()
-        .frame(width: 250)
+        .padding(20)
         .glassBackgroundEffect()
     }
 }
@@ -64,6 +85,11 @@ struct InfoRow: View {
         type: "Terrestrial",
         radiusCategory: "Medium",
         distanceCategory: "Inner",
-        orbitalPeriodCategory: "Moderate"
+        orbitalPeriodCategory: "Moderate",
+        rotationPeriod: "24 hours",
+        orbitalPeriod: "365.25 days",
+        diameter: "12,742 km",
+        distanceFromSun: "149.6 million km",
+        interestingFact: "Earth is the only known planet to support life and has liquid water on its surface."
     ))
 }

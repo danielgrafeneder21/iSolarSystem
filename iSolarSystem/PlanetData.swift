@@ -15,4 +15,9 @@ struct PlanetData: Identifiable {
     let radiusCategory: String
     let distanceCategory: String
     let orbitalPeriodCategory: String
+    let rotationPeriod: String
+    let orbitalPeriod: String
+    let diameter: String
+    let distanceFromSun: String
+    let interestingFact: String
 }

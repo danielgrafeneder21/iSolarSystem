@@ -11,7 +11,7 @@ import RealityKitContent
 
 struct ContentView: View {
     @Environment(AppModel.self) private var appModel
-    @State private var showTestView = false
+    @Environment(\.openWindow) private var openWindow
 
     var body: some View {
         VStack(spacing: 20) {
@@ -38,101 +38,59 @@ struct ContentView: View {
                     .buttonStyle(.borderedProminent)
                 }
                 .padding()
-            } else if !showTestView {
-                Model3D(named: "Scene", bundle: realityKitContentBundle)
-                    .padding(.bottom, 50)
-
-                Text("Hello, world!")
-            } else {
-                Text("Component Test Mode")
-                    .font(.title)
-                    .padding()
-                
-                Text("Check the console for component details")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
             }
 
             if appModel.sceneLoadError == nil {
                 ToggleImmersiveSpaceButton()
                 
-                // Time Controls
+                // Floating window controls when immersive space is open
                 if appModel.immersiveSpaceState == .open {
-                    Divider()
-                    
                     VStack(spacing: 12) {
-                        Text("Simulation Controls")
-                            .font(.headline)
+                        HStack(spacing: 8) {
+                            Image(systemName: "macwindow.on.rectangle")
+                                .foregroundStyle(.blue)
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("Floating Windows")
+                                    .font(.headline)
+                                Text("Open control panels in 3D space")
+                                    .font(.caption2)
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
                         
-                        HStack(spacing: 16) {
-                            Button(action: togglePlayPause) {
-                                Image(systemName: appModel.isPlaying ? "pause.fill" : "play.fill")
-                                    .font(.title3)
+                        HStack(spacing: 12) {
+                            Button {
+                                openWindow(id: "TimeControlWindow")
+                            } label: {
+                                Label("Controls", systemImage: "slider.horizontal.3")
+                            }
+                            .buttonStyle(.borderedProminent)
+                            .help("Open time control window")
+                            
+                            Button {
+                                openWindow(id: "DebugWindow")
+                            } label: {
+                                Label("Debug", systemImage: "gauge")
                             }
                             .buttonStyle(.bordered)
+                            .help("Open debug info window")
                             
-                            VStack {
-                                Slider(value: Binding(
-                                    get: { appModel.simulationTimeScale },
-                                    set: { newValue in
-                                        appModel.simulationTimeScale = newValue
-                                        if newValue > 0 {
-                                            appModel.lastNonZeroTimeScale = newValue
-                                        }
-                                        appModel.isPlaying = newValue > 0
-                                    }
-                                ), in: 0.1...50.0)
-                                .frame(width: 200)
-                                
-                                Text(String(format: "Speed: %.1f×", appModel.simulationTimeScale))
-                                    .font(.caption)
-                                    .monospacedDigit()
+                            Button {
+                                openWindow(id: "PlanetInfoWindow")
+                            } label: {
+                                Label("Planet Info", systemImage: "info.circle")
                             }
+                            .buttonStyle(.borderedProminent)
+                            .help("Open planet information window")
                         }
                     }
                     .padding()
-                    .background(.regularMaterial)
+                    .background(.blue.opacity(0.1))
                     .cornerRadius(12)
-                    
-                    // Selected Planet Info
-                    if let planet = appModel.selectedPlanet {
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text("Selected: \(planet.name)")
-                                .font(.headline)
-                            Text("Type: \(planet.type)")
-                                .font(.caption)
-                            Text("Size: \(planet.radiusCategory)")
-                                .font(.caption)
-                            Text("Distance: \(planet.distanceCategory)")
-                                .font(.caption)
-                            Text("Orbit: \(planet.orbitalPeriodCategory)")
-                                .font(.caption)
-                        }
-                        .padding()
-                        .background(.regularMaterial)
-                        .cornerRadius(12)
-                    }
                 }
-                
-                Button(showTestView ? "Show Original View" : "Test ECS Components") {
-                    showTestView.toggle()
-                }
-                .buttonStyle(.bordered)
             }
         }
         .padding()
-    }
-    
-    /// Toggles between playing and paused states
-    private func togglePlayPause() {
-        if appModel.isPlaying {
-            appModel.lastNonZeroTimeScale = appModel.simulationTimeScale
-            appModel.simulationTimeScale = 0
-            appModel.isPlaying = false
-        } else {
-            appModel.simulationTimeScale = appModel.lastNonZeroTimeScale
-            appModel.isPlaying = true
-        }
     }
     
     /// Attempts to retry loading the scene by closing and reopening the immersive space
