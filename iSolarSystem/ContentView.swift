@@ -91,6 +91,12 @@ struct ContentView: View {
             }
         }
         .padding()
+        .onChange(of: appModel.selectedPlanet) { oldValue, newValue in
+            // Auto-open planet info window when a planet is selected
+            if newValue != nil && oldValue == nil {
+                openWindow(id: "PlanetInfoWindow")
+            }
+        }
     }
     
     /// Attempts to retry loading the scene by closing and reopening the immersive space

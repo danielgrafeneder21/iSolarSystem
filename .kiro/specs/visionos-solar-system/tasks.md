@@ -412,8 +412,8 @@
   - Test visibility of selection indicator against various backgrounds
   - _Requirements: 4.2, 5.6_
 
-- [ ] 20. Improve visualization of currently selected planet
-- [ ] 20.1 Enhance selection visual feedback
+- [x] 20. Improve visualization of currently selected planet
+- [x] 20.1 Enhance selection visual feedback
   - Add more prominent selection ring or outline around selected planet
   - Increase glow intensity or add pulsing animation
   - Ensure selection marker is clearly visible from all angles
@@ -421,7 +421,7 @@
   - Test visibility in various lighting conditions
   - _Requirements: 4.2, 5.6_
 
-- [ ] 20.2 Add selection indicator in 3D space
+- [x] 20.2 Add selection indicator in 3D space
   - Create floating label or icon above selected planet
   - Display planet name in 3D space near the planet
   - Add arrow or pointer connecting label to planet
@@ -429,20 +429,12 @@
   - Make label optional via UI toggle
   - _Requirements: 5.2, 5.6_
 
-- [ ] 20.3 Improve planet info window integration
+- [x] 20.3 Improve planet info window integration
   - Ensure Planet Info window updates immediately when selection changes
   - Add smooth transition animations when switching between planets
   - Consider adding thumbnail or icon of selected planet in window
   - Improve window layout and information hierarchy
   - _Requirements: 5.2, 5.3, 5.4, 5.5_
-
-- [ ] 20.4 Add camera focus option for selected planet
-  - Implement smooth camera movement to focus on selected planet
-  - Add "Focus on Planet" button in Planet Info window
-  - Zoom to appropriate distance based on planet size
-  - Maintain orbital motion visibility during focus
-  - Add "Reset View" button to return to default position
-  - _Requirements: 6.1, 6.3_
 
 - [ ] 21. Implement realistic orbital plane inclinations
 - [ ] 21.1 Research and document actual orbital inclinations

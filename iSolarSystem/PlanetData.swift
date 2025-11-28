@@ -8,7 +8,7 @@
 import Foundation
 
 /// UI model representing planet information for display in Info Panel
-struct PlanetData: Identifiable {
+struct PlanetData: Identifiable, Equatable {
     let id: UUID
     let name: String
     let type: String

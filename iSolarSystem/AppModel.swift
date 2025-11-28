@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import RealityKit
 
 /// Maintains app-wide state
 @MainActor
@@ -35,6 +36,12 @@ class AppModel {
     
     /// Whether orbit lines should be visible for all planets
     var showOrbitLines: Bool = false
+    
+    /// Whether 3D labels should be shown for selected planets
+    var showSelectionLabels: Bool = true
+    
+    /// Trigger to open planet info window when planet is selected
+    var shouldOpenPlanetInfo: Bool = false
     
     // MARK: - System References
     
