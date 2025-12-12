@@ -9,24 +9,18 @@ import SwiftUI
 
 @main
 struct iSolarSystemApp: App {
-
-    @State private var appModel = AppModel()
-
+    @State private var model = AppModel()
+    
     var body: some Scene {
         WindowGroup {
-            ContentView()
-                .environment(appModel)
+            MainMenuView()
+                .environment(model)
         }
-
-        ImmersiveSpace(id: appModel.immersiveSpaceID) {
-            ImmersiveView()
-                .environment(appModel)
-                .onAppear {
-                    appModel.immersiveSpaceState = .open
-                }
-                .onDisappear {
-                    appModel.immersiveSpaceState = .closed
-                }
+        
+        // immersive 3D world
+        ImmersiveSpace(id: "SolarSystemSpace") {
+            SolarSystemView()
+                .environment(model)
         }
         .immersionStyle(selection: .constant(.full), in: .full)
     }
