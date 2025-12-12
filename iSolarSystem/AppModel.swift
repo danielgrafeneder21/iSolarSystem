@@ -35,7 +35,7 @@ class AppModel {
     var selectedPlanet: PlanetData? = nil
     
     /// Whether orbit lines should be visible for all planets
-    var showOrbitLines: Bool = false
+    var showOrbitLines: Bool = true
     
     /// Whether 3D labels should be shown for selected planets
     var showSelectionLabels: Bool = true
