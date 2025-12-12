@@ -338,13 +338,14 @@ struct ImmersiveView: View {
             // Position solar system for isometric viewing angle
             // Place 3.5 meters in front of user (negative Z in RealityKit) - moved back for better overview
             // Position at eye level (0.1 meters on Y-axis) - raised higher for comfortable viewing
-            solarSystemScene.position = SIMD3<Float>(0, 0.1, -3.5)
+            solarSystemScene.position = SIMD3<Float>(0, 1.5, -3.5)
             
             // Apply rotation to tilt the orbital plane for isometric perspective
             // Rotate 35 degrees around X-axis to tilt the plane toward the user
-            let tiltAngle: Float = 35.0 * .pi / 180.0  // Convert degrees to radians
-            let tiltRotation = simd_quatf(angle: tiltAngle, axis: SIMD3<Float>(1, 0, 0))
-            solarSystemScene.orientation = tiltRotation
+            // let tiltAngle: Float = 35.0 * .pi / 180.0  // Convert degrees to radians
+            // let tiltRotation = simd_quatf(angle: tiltAngle, axis: SIMD3<Float>(1, 0, 0))
+            solarSystemScene.orientation = simd_quatf(angle: 0, axis: SIMD3<Float>(1, 0, 0)) // tiltRotation
+            // currently no tilt
             
             // Create and add the Sun
             let sun = try createSunEntity()
