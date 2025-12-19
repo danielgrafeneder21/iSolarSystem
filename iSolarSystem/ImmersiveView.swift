@@ -34,7 +34,7 @@ struct ImmersiveView: View {
                 appModel.highlightSystem = highlightSystem
                 
                 // Setup the solar system scene
-                setupSolarSystem(content: content)
+                await setupSolarSystem(content: content)
                 
                 // Store root entity reference for timer updates
                 rootEntity = content.entities.first
@@ -327,7 +327,7 @@ struct ImmersiveView: View {
     
     /// Sets up the complete solar system scene with Sun and planets
     /// - Parameter content: RealityView content to add entities to
-    private func setupSolarSystem<Content>(content: Content) where Content: RealityViewContentProtocol {
+    private func setupSolarSystem<Content>(content: Content) async where Content: RealityViewContentProtocol {
         do {
             print("🌌 [setupSolarSystem] Starting solar system scene creation")
             
@@ -348,10 +348,11 @@ struct ImmersiveView: View {
             // currently no tilt
             
             // Create and add the Sun
-            let sun = try createSunEntity()
-            sun.name = "Sun"
-            solarSystemScene.addChild(sun)
-            print("☀️ [setupSolarSystem] Created Sun at position: \(sun.position)")
+            let sunUSDZ = try await loadUSDZAsync(name: "Sun")
+            sunUSDZ.scale = .init(repeating: 0.35)
+            sunUSDZ.name = "Sun"
+            solarSystemScene.addChild(sunUSDZ)
+            print("☀️ [setupSolarSystem] Created Sun at position: \(sunUSDZ.position)")
             
             // Create Mercury - Closest, fastest, smallest
             // Rotation: 58.6 Earth days per rotation = slow rotation
@@ -361,13 +362,35 @@ struct ImmersiveView: View {
                 orbitalPeriodDays: 88.0,
                 defaultPhase: .pi / 4
             )
-            let (mercury, mercuryOrbitLine) = try createPlanetEntity(
+            
+            let mercuryUSDZ = try await loadUSDZAsync(name: "Mercury")
+            mercuryUSDZ.scale = .init(repeating: 0.08)
+            
+            mercuryUSDZ.name = "Mercury"
+            
+            mercuryUSDZ.components[OrbitComponent.self] = OrbitComponent(
+                radius: 0.6,
+                speed: 0.175,
+                currentPhase: mercuryPhase,
+                inclination: 0.03
+            )
+            
+            let mercuryBounds = mercuryUSDZ.visualBounds(relativeTo: nil)
+            let mercuryCollisionRadius = max(
+                mercuryBounds.extents.x,
+                mercuryBounds.extents.y,
+                mercuryBounds.extents.z
+            ) / 2
+            
+            mercuryUSDZ.components[SelectionComponent.self] = SelectionComponent(
+                isSelected: false,
+                isHovered: false,
+                collisionRadius: mercuryCollisionRadius
+            )
+            
+            mercuryUSDZ.components[PlanetDataComponent.self] = PlanetDataComponent(
                 name: "Mercury",
-                radius: 0.6,           // Slightly increased for better visibility
-                speed: 0.175,          // Halved again for even slower base speed
-                size: 0.055,           // Slightly larger for visibility
                 type: .terrestrial,
-                color: UIColor(red: 0.7, green: 0.7, blue: 0.7, alpha: 1.0),
                 radiusCategory: "Small",
                 distanceCategory: "Inner",
                 orbitalPeriodCategory: "Fast",
@@ -376,12 +399,28 @@ struct ImmersiveView: View {
                 diameter: "4,879 km",
                 distanceFromSun: "57.9 million km",
                 interestingFact: "Mercury has the most extreme temperature variations of any planet, ranging from -173°C at night to 427°C during the day.",
-                inclination: 0.03,     // Subtle tilt for variety
-                rotationSpeed: 0.5 / 58.6,  // Scaled: Earth baseline (0.5) / 58.6 days
-                initialPhase: mercuryPhase
             )
-            mercury.name = "Mercury"
-            solarSystemScene.addChild(mercury)
+            
+            mercuryUSDZ.components[HighlightComponent.self] = HighlightComponent()
+            mercuryUSDZ.components[RotationComponent.self] = RotationComponent(
+               rotationSpeed: 0.5 / 58.6,
+               currentRotation: 0
+            )
+           
+            mercuryUSDZ.components[CollisionComponent.self] = CollisionComponent(
+               shapes: [.generateSphere(radius: mercuryCollisionRadius)],
+               mode: .trigger,
+               filter: .sensor
+            )
+           
+            mercuryUSDZ.components[InputTargetComponent.self] = InputTargetComponent()
+           
+            let mercuryOrbitLine = generateOrbitLine(
+                radius: 0.6,
+                inclination: 0.03
+            )
+            
+            solarSystemScene.addChild(mercuryUSDZ)
             solarSystemScene.addChild(mercuryOrbitLine)
             print("🪐 [setupSolarSystem] Created Mercury - radius: \(0.6)m, speed: \(0.175) rad/s, size: \(0.055)m")
             
@@ -393,13 +432,35 @@ struct ImmersiveView: View {
                 orbitalPeriodDays: 225.0,
                 defaultPhase: 3 * .pi / 4
             )
-            let (venus, venusOrbitLine) = try createPlanetEntity(
+            
+            let venusUSDZ = try await loadUSDZAsync(name: "Venus")
+            venusUSDZ.scale = .init(repeating: 0.10)
+                        
+            venusUSDZ.name = "Venus"
+            
+            venusUSDZ.components[OrbitComponent.self] = OrbitComponent(
+                radius: 0.85,
+                speed: 0.14,
+                currentPhase: venusPhase,
+                inclination: 0.06
+            )
+            
+            let venusBounds = venusUSDZ.visualBounds(relativeTo: nil)
+            let venusCollisionRadius = max(
+                venusBounds.extents.x,
+                venusBounds.extents.y,
+                venusBounds.extents.z
+            ) / 2
+            
+            venusUSDZ.components[SelectionComponent.self] = SelectionComponent(
+                isSelected: false,
+                isHovered: false,
+                collisionRadius: venusCollisionRadius
+            )
+            
+            venusUSDZ.components[PlanetDataComponent.self] = PlanetDataComponent(
                 name: "Venus",
-                radius: 0.85,          // Better spacing from Mercury
-                speed: 0.14,           // Halved again for even slower base speed
-                size: 0.085,           // Slightly larger for differentiation
                 type: .terrestrial,
-                color: UIColor(red: 0.9, green: 0.8, blue: 0.5, alpha: 1.0),
                 radiusCategory: "Medium",
                 distanceCategory: "Inner",
                 orbitalPeriodCategory: "Fast",
@@ -408,12 +469,28 @@ struct ImmersiveView: View {
                 diameter: "12,104 km",
                 distanceFromSun: "108.2 million km",
                 interestingFact: "Venus rotates backwards compared to most planets and has the hottest surface temperature of any planet at 462°C.",
-                inclination: 0.06,     // More noticeable tilt
-                rotationSpeed: -0.5 / 243.0,  // Negative for retrograde rotation
-                initialPhase: venusPhase
             )
-            venus.name = "Venus"
-            solarSystemScene.addChild(venus)
+            
+            venusUSDZ.components[HighlightComponent.self] = HighlightComponent()
+            venusUSDZ.components[RotationComponent.self] = RotationComponent(
+                rotationSpeed: -0.5 / 243.0,
+                currentRotation: 0
+            )
+            
+            venusUSDZ.components[CollisionComponent.self] = CollisionComponent(
+                shapes: [.generateSphere(radius: venusCollisionRadius)],
+                mode: .trigger,
+                filter: .sensor
+            )
+            
+            venusUSDZ.components[InputTargetComponent.self] = InputTargetComponent()
+            
+            let venusOrbitLine = generateOrbitLine(
+                radius: 0.85,
+                inclination: 0.06
+            )
+            
+            solarSystemScene.addChild(venusUSDZ)
             solarSystemScene.addChild(venusOrbitLine)
             print("🪐 [setupSolarSystem] Created Venus - radius: \(0.85)m, speed: \(0.14) rad/s, size: \(0.085)m")
             
@@ -425,13 +502,39 @@ struct ImmersiveView: View {
                 orbitalPeriodDays: 365.25,
                 defaultPhase: 5 * .pi / 4
             )
-            let (earth, earthOrbitLine) = try createPlanetEntity(
+            
+            let earthUSDZ = try await loadUSDZAsync(name: "Earth")
+            earthUSDZ.scale = .init(repeating: 0.10)
+            
+            earthUSDZ.name = "Earth"
+            
+            earthUSDZ.components[OrbitComponent.self] = OrbitComponent(
+                radius: 1.15,
+                speed: 0.10,
+                currentPhase: earthPhase,
+                inclination: 0.12
+            )
+            
+            let earthBounds = earthUSDZ.visualBounds(relativeTo: nil)
+            let earthCollisionRadius = max(
+                earthBounds.extents.x,
+                earthBounds.extents.y,
+                earthBounds.extents.z
+            ) / 2
+            
+            earthUSDZ.components[SelectionComponent.self] = SelectionComponent(
+                isSelected: false,
+                isHovered: false,
+                collisionRadius: earthCollisionRadius
+            )
+            
+            earthUSDZ.components[PlanetDataComponent.self] = PlanetDataComponent(
                 name: "Earth",
-                radius: 1.15,          // Increased spacing
-                speed: 0.10,           // Halved again for even slower base speed
-                size: 0.09,            // Clear visibility
+                //radius: 1.15,          // Increased spacing
+                //speed: 0.10,           // Halved again for even slower base speed
+                //size: 0.09,            // Clear visibility
                 type: .terrestrial,
-                color: UIColor(red: 0.2, green: 0.5, blue: 0.9, alpha: 1.0),
+                //color: UIColor(red: 0.2, green: 0.5, blue: 0.9, alpha: 1.0),
                 radiusCategory: "Medium",
                 distanceCategory: "Inner",
                 orbitalPeriodCategory: "Moderate",
@@ -440,12 +543,32 @@ struct ImmersiveView: View {
                 diameter: "12,742 km",
                 distanceFromSun: "149.6 million km",
                 interestingFact: "Earth is the only known planet to support life and has liquid water covering 71% of its surface.",
-                inclination: 0.12,     // Earth's actual tilt for realism
-                rotationSpeed: 0.5,    // Baseline rotation speed (visible at 1× time scale)
-                initialPhase: earthPhase
+                //inclination: 0.12,     // Earth's actual tilt for realism
+                //rotationSpeed: 0.5,    // Baseline rotation speed (visible at 1× time scale)
+                //initialPhase: earthPhase
             )
-            earth.name = "Earth"
-            solarSystemScene.addChild(earth)
+            
+            earthUSDZ.components[HighlightComponent.self] = HighlightComponent()
+            earthUSDZ.components[RotationComponent.self] = RotationComponent(
+                rotationSpeed: 0.5,
+                currentRotation: 0
+            )
+            
+            earthUSDZ.components[CollisionComponent.self] = CollisionComponent(
+                shapes: [.generateSphere(radius: earthCollisionRadius)],
+                mode: .trigger,
+                filter: .sensor
+            )
+            
+            earthUSDZ.components[InputTargetComponent.self] = InputTargetComponent()
+            
+            let earthOrbitLine = generateOrbitLine(
+                radius: 1.15,
+                inclination: 0.12
+            )
+            
+            // earth.name = "Earth"
+            solarSystemScene.addChild(earthUSDZ)
             solarSystemScene.addChild(earthOrbitLine)
             print("🪐 [setupSolarSystem] Created Earth - radius: \(1.15)m, speed: \(0.10) rad/s, size: \(0.09)m")
             
@@ -457,13 +580,35 @@ struct ImmersiveView: View {
                 orbitalPeriodDays: 687.0,
                 defaultPhase: 7 * .pi / 4
             )
-            let (mars, marsOrbitLine) = try createPlanetEntity(
+            
+            let marsUSDZ = try await loadUSDZAsync(name: "Mars")
+            marsUSDZ.scale = .init(repeating: 0.09)
+            
+            marsUSDZ.name = "Mars"
+            
+            marsUSDZ.components[OrbitComponent.self] = OrbitComponent(
+                radius: 1.5,
+                speed: 0.07,
+                currentPhase: marsPhase,
+                inclination: 0.08
+            )
+            
+            let marsBounds = marsUSDZ.visualBounds(relativeTo: nil)
+            let marsCollisionRadius = max(
+                marsBounds.extents.x,
+                marsBounds.extents.y,
+                marsBounds.extents.z
+            ) / 2
+            
+            marsUSDZ.components[SelectionComponent.self] = SelectionComponent(
+                isSelected: false,
+                isHovered: false,
+                collisionRadius: marsCollisionRadius
+            )
+            
+            marsUSDZ.components[PlanetDataComponent.self] = PlanetDataComponent(
                 name: "Mars",
-                radius: 1.5,           // Better spacing from Earth
-                speed: 0.07,           // Halved again for even slower base speed
-                size: 0.065,           // Smaller than Earth
                 type: .terrestrial,
-                color: UIColor(red: 0.9, green: 0.4, blue: 0.2, alpha: 1.0),
                 radiusCategory: "Small",
                 distanceCategory: "Inner",
                 orbitalPeriodCategory: "Moderate",
@@ -472,12 +617,28 @@ struct ImmersiveView: View {
                 diameter: "6,779 km",
                 distanceFromSun: "227.9 million km",
                 interestingFact: "Mars has the largest volcano in the solar system, Olympus Mons, which is about 3 times the height of Mount Everest.",
-                inclination: 0.08,     // Moderate tilt
-                rotationSpeed: 0.5 * (24.0 / 24.6),  // Slightly slower than Earth
-                initialPhase: marsPhase
             )
-            mars.name = "Mars"
-            solarSystemScene.addChild(mars)
+            
+            marsUSDZ.components[HighlightComponent.self] = HighlightComponent()
+            marsUSDZ.components[RotationComponent.self] = RotationComponent(
+                rotationSpeed: 0.5 * (24.0 / 24.6),
+                currentRotation: 0
+            )
+            
+            marsUSDZ.components[CollisionComponent.self] = CollisionComponent(
+                shapes: [.generateSphere(radius: marsCollisionRadius)],
+                mode: .trigger,
+                filter: .sensor
+            )
+            
+            marsUSDZ.components[InputTargetComponent.self] = InputTargetComponent()
+            
+            let marsOrbitLine = generateOrbitLine(
+                radius: 1.5,
+                inclination: 0.08
+            )
+            
+            solarSystemScene.addChild(marsUSDZ)
             solarSystemScene.addChild(marsOrbitLine)
             print("🪐 [setupSolarSystem] Created Mars - radius: \(1.5)m, speed: \(0.07) rad/s, size: \(0.065)m")
             
@@ -489,13 +650,35 @@ struct ImmersiveView: View {
                 orbitalPeriodDays: 4332.59,  // ~12 years
                 defaultPhase: .pi
             )
-            let (jupiter, jupiterOrbitLine) = try createPlanetEntity(
+            
+            let jupiterUSDZ = try await loadUSDZAsync(name: "Jupiter")
+            jupiterUSDZ.scale = .init(repeating: 0.22)
+            
+            jupiterUSDZ.name = "Jupiter"
+            
+            jupiterUSDZ.components[OrbitComponent.self] = OrbitComponent(
+                radius: 2.2,
+                speed: 0.045,
+                currentPhase: jupiterPhase,
+                inclination: 0.04
+            )
+            
+            let jupiterBounds = jupiterUSDZ.visualBounds(relativeTo: nil)
+            let jupiterCollisionRadius = max(
+                jupiterBounds.extents.x,
+                jupiterBounds.extents.y,
+                jupiterBounds.extents.z
+            ) / 2
+            
+            jupiterUSDZ.components[SelectionComponent.self] = SelectionComponent(
+                isSelected: false,
+                isHovered: false,
+                collisionRadius: jupiterCollisionRadius
+            )
+                        
+            jupiterUSDZ.components[PlanetDataComponent.self] = PlanetDataComponent(
                 name: "Jupiter",
-                radius: 2.2,           // Significant gap to outer planets
-                speed: 0.045,          // Halved again for even slower base speed
-                size: 0.16,            // Clearly the largest
                 type: .gasGiant,
-                color: UIColor(red: 0.8, green: 0.7, blue: 0.5, alpha: 1.0),
                 radiusCategory: "Large",
                 distanceCategory: "Outer",
                 orbitalPeriodCategory: "Slow",
@@ -504,12 +687,28 @@ struct ImmersiveView: View {
                 diameter: "139,820 km",
                 distanceFromSun: "778.5 million km",
                 interestingFact: "Jupiter is so massive that it could fit all the other planets inside it, and its Great Red Spot is a storm larger than Earth.",
-                inclination: 0.04,     // Subtle tilt
-                rotationSpeed: 0.5 * (24.0 / 9.9),  // Much faster than Earth
-                initialPhase: jupiterPhase
             )
-            jupiter.name = "Jupiter"
-            solarSystemScene.addChild(jupiter)
+            
+            jupiterUSDZ.components[HighlightComponent.self] = HighlightComponent()
+            jupiterUSDZ.components[RotationComponent.self] = RotationComponent(
+                rotationSpeed: 0.5 * (24.0 / 9.9),
+                currentRotation: 0
+            )
+            
+            jupiterUSDZ.components[CollisionComponent.self] = CollisionComponent(
+                shapes: [.generateSphere(radius: jupiterCollisionRadius)],
+                mode: .trigger,
+                filter: .sensor
+            )
+            
+            jupiterUSDZ.components[InputTargetComponent.self] = InputTargetComponent()
+            
+            let jupiterOrbitLine = generateOrbitLine(
+                radius: 1.15,
+                inclination: 0.12
+            )
+            
+            solarSystemScene.addChild(jupiterUSDZ)
             solarSystemScene.addChild(jupiterOrbitLine)
             print("🪐 [setupSolarSystem] Created Jupiter - radius: \(2.2)m, speed: \(0.045) rad/s, size: \(0.16)m")
             
@@ -521,13 +720,35 @@ struct ImmersiveView: View {
                 orbitalPeriodDays: 10759.22,  // ~29 years
                 defaultPhase: .pi / 6
             )
-            let (saturn, saturnOrbitLine) = try createPlanetEntity(
+            
+            let saturnUSDZ = try await loadUSDZAsync(name: "Saturn")
+            saturnUSDZ.scale = .init(repeating: 0.20)
+                        
+            saturnUSDZ.name = "Saturn"
+            
+            saturnUSDZ.components[OrbitComponent.self] = OrbitComponent(
+                radius: 2.8,
+                speed: 0.0325,
+                currentPhase: saturnPhase,
+                inclination: 0.18
+            )
+            
+            let saturnBounds = saturnUSDZ.visualBounds(relativeTo: nil)
+            let saturnCollisionRadius = max(
+                saturnBounds.extents.x,
+                saturnBounds.extents.y,
+                saturnBounds.extents.z
+            ) / 2
+            
+            saturnUSDZ.components[SelectionComponent.self] = SelectionComponent(
+                isSelected: false,
+                isHovered: false,
+                collisionRadius: saturnCollisionRadius
+            )
+            
+            saturnUSDZ.components[PlanetDataComponent.self] = PlanetDataComponent(
                 name: "Saturn",
-                radius: 2.8,           // Outermost orbit, good spacing
-                speed: 0.0325,         // Halved again for even slower base speed
-                size: 0.14,            // Large but smaller than Jupiter
                 type: .gasGiant,
-                color: UIColor(red: 0.9, green: 0.8, blue: 0.6, alpha: 1.0),
                 radiusCategory: "Large",
                 distanceCategory: "Outer",
                 orbitalPeriodCategory: "Slow",
@@ -536,12 +757,28 @@ struct ImmersiveView: View {
                 diameter: "116,460 km",
                 distanceFromSun: "1.43 billion km",
                 interestingFact: "Saturn's iconic rings are made of billions of ice and rock particles, and the planet is light enough to float in water.",
-                inclination: 0.18,     // Most tilted for visual interest
-                rotationSpeed: 0.5 * (24.0 / 10.7),  // Fast rotation like Jupiter
-                initialPhase: saturnPhase
             )
-            saturn.name = "Saturn"
-            solarSystemScene.addChild(saturn)
+            
+            saturnUSDZ.components[HighlightComponent.self] = HighlightComponent()
+            saturnUSDZ.components[RotationComponent.self] = RotationComponent(
+                rotationSpeed: 0.5 * (24.0 / 10.7),
+                currentRotation: 0
+            )
+            
+            saturnUSDZ.components[CollisionComponent.self] = CollisionComponent(
+                shapes: [.generateSphere(radius: saturnCollisionRadius)],
+                mode: .trigger,
+                filter: .sensor
+            )
+            
+            saturnUSDZ.components[InputTargetComponent.self] = InputTargetComponent()
+            
+            let saturnOrbitLine = generateOrbitLine(
+                radius: 1.15,
+                inclination: 0.12
+            )
+            
+            solarSystemScene.addChild(saturnUSDZ)
             solarSystemScene.addChild(saturnOrbitLine)
             print("🪐 [setupSolarSystem] Created Saturn - radius: \(2.8)m, speed: \(0.0325) rad/s, size: \(0.14)m")
             
@@ -1158,6 +1395,13 @@ struct ImmersiveView: View {
             // Apply visual effect
             applyHighlightVisual(to: entity, intensity: highlightComponent.currentIntensity)
         }
+    }
+    
+    private func loadUSDZAsync(
+        name: String
+    ) async throws -> Entity {
+
+        try await Entity.load(named: name)
     }
 }
 
