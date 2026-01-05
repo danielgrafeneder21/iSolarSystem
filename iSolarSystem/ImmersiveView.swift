@@ -338,7 +338,7 @@ struct ImmersiveView: View {
             // Position solar system for isometric viewing angle
             // Place 3.5 meters in front of user (negative Z in RealityKit) - moved back for better overview
             // Position at eye level (0.1 meters on Y-axis) - raised higher for comfortable viewing
-            solarSystemScene.position = SIMD3<Float>(0, 1.5, -3.5)
+            solarSystemScene.position = SIMD3<Float>(0, 1.5, -15)
             
             // Apply rotation to tilt the orbital plane for isometric perspective
             // Rotate 35 degrees around X-axis to tilt the plane toward the user
@@ -349,7 +349,7 @@ struct ImmersiveView: View {
             
             // Create and add the Sun
             let sunUSDZ = try await loadUSDZAsync(name: "Sun")
-            sunUSDZ.scale = .init(repeating: 0.35)
+            sunUSDZ.scale = .init(repeating: 3.0)
             sunUSDZ.components[BaseScaleComponent.self] = BaseScaleComponent(baseScale: sunUSDZ.scale)
             sunUSDZ.name = "Sun"
             solarSystemScene.addChild(sunUSDZ)
@@ -365,7 +365,7 @@ struct ImmersiveView: View {
             )
             
             let mercuryUSDZ = try await loadUSDZAsync(name: "Mercury")
-            mercuryUSDZ.scale = .init(repeating: 0.08)
+            mercuryUSDZ.scale = .init(repeating: 0.11)
             mercuryUSDZ.components[BaseScaleComponent.self] = BaseScaleComponent(baseScale: mercuryUSDZ.scale)
             
             mercuryUSDZ.name = "Mercury"
@@ -436,7 +436,7 @@ struct ImmersiveView: View {
             )
             
             let venusUSDZ = try await loadUSDZAsync(name: "Venus")
-            venusUSDZ.scale = .init(repeating: 0.10)
+            venusUSDZ.scale = .init(repeating: 0.16)
             venusUSDZ.components[BaseScaleComponent.self] = BaseScaleComponent(baseScale: venusUSDZ.scale)
                         
             venusUSDZ.name = "Venus"
@@ -507,7 +507,7 @@ struct ImmersiveView: View {
             )
             
             let earthUSDZ = try await loadUSDZAsync(name: "Earth")
-            earthUSDZ.scale = .init(repeating: 0.10)
+            earthUSDZ.scale = .init(repeating: 0.16)
             earthUSDZ.components[BaseScaleComponent.self] = BaseScaleComponent(baseScale: earthUSDZ.scale)
             
             earthUSDZ.name = "Earth"
@@ -586,7 +586,7 @@ struct ImmersiveView: View {
             )
             
             let marsUSDZ = try await loadUSDZAsync(name: "Mars")
-            marsUSDZ.scale = .init(repeating: 0.09)
+            marsUSDZ.scale = .init(repeating: 0.14)
             marsUSDZ.components[BaseScaleComponent.self] = BaseScaleComponent(baseScale: marsUSDZ.scale)
             
             marsUSDZ.name = "Mars"
@@ -657,7 +657,7 @@ struct ImmersiveView: View {
             )
             
             let jupiterUSDZ = try await loadUSDZAsync(name: "Jupiter")
-            jupiterUSDZ.scale = .init(repeating: 0.22)
+            jupiterUSDZ.scale = .init(repeating: 0.35)
             jupiterUSDZ.components[BaseScaleComponent.self] = BaseScaleComponent(baseScale: jupiterUSDZ.scale)
             
             jupiterUSDZ.name = "Jupiter"
@@ -728,7 +728,7 @@ struct ImmersiveView: View {
             )
             
             let saturnUSDZ = try await loadUSDZAsync(name: "Saturn")
-            saturnUSDZ.scale = .init(repeating: 0.20)
+            saturnUSDZ.scale = .init(repeating: 0.32)
             saturnUSDZ.components[BaseScaleComponent.self] = BaseScaleComponent(baseScale: saturnUSDZ.scale)
                         
             saturnUSDZ.name = "Saturn"
@@ -788,6 +788,8 @@ struct ImmersiveView: View {
             solarSystemScene.addChild(saturnUSDZ)
             solarSystemScene.addChild(saturnOrbitLine)
             print("🪐 [setupSolarSystem] Created Saturn - radius: \(2.8)m, speed: \(0.0325) rad/s, size: \(0.14)m")
+            
+            solarSystemScene.scale = SIMD3<Float>(repeating: 4.0)
             
             // Add the complete solar system scene to the RealityView content
             content.add(solarSystemScene)
