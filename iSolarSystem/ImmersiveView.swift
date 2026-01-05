@@ -704,7 +704,7 @@ struct ImmersiveView: View {
             jupiterUSDZ.components[InputTargetComponent.self] = InputTargetComponent()
             
             let jupiterOrbitLine = generateOrbitLine(
-                radius: 1.15,
+                radius: 2.2,
                 inclination: 0.12
             )
             
@@ -774,7 +774,7 @@ struct ImmersiveView: View {
             saturnUSDZ.components[InputTargetComponent.self] = InputTargetComponent()
             
             let saturnOrbitLine = generateOrbitLine(
-                radius: 1.15,
+                radius: 2.8,
                 inclination: 0.12
             )
             
