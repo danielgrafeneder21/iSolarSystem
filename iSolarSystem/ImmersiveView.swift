@@ -350,6 +350,7 @@ struct ImmersiveView: View {
             // Create and add the Sun
             let sunUSDZ = try await loadUSDZAsync(name: "Sun")
             sunUSDZ.scale = .init(repeating: 0.35)
+            sunUSDZ.components[BaseScaleComponent.self] = BaseScaleComponent(baseScale: sunUSDZ.scale)
             sunUSDZ.name = "Sun"
             solarSystemScene.addChild(sunUSDZ)
             print("☀️ [setupSolarSystem] Created Sun at position: \(sunUSDZ.position)")
@@ -365,6 +366,7 @@ struct ImmersiveView: View {
             
             let mercuryUSDZ = try await loadUSDZAsync(name: "Mercury")
             mercuryUSDZ.scale = .init(repeating: 0.08)
+            mercuryUSDZ.components[BaseScaleComponent.self] = BaseScaleComponent(baseScale: mercuryUSDZ.scale)
             
             mercuryUSDZ.name = "Mercury"
             
@@ -435,6 +437,7 @@ struct ImmersiveView: View {
             
             let venusUSDZ = try await loadUSDZAsync(name: "Venus")
             venusUSDZ.scale = .init(repeating: 0.10)
+            venusUSDZ.components[BaseScaleComponent.self] = BaseScaleComponent(baseScale: venusUSDZ.scale)
                         
             venusUSDZ.name = "Venus"
             
@@ -505,6 +508,7 @@ struct ImmersiveView: View {
             
             let earthUSDZ = try await loadUSDZAsync(name: "Earth")
             earthUSDZ.scale = .init(repeating: 0.10)
+            earthUSDZ.components[BaseScaleComponent.self] = BaseScaleComponent(baseScale: earthUSDZ.scale)
             
             earthUSDZ.name = "Earth"
             
@@ -583,6 +587,7 @@ struct ImmersiveView: View {
             
             let marsUSDZ = try await loadUSDZAsync(name: "Mars")
             marsUSDZ.scale = .init(repeating: 0.09)
+            marsUSDZ.components[BaseScaleComponent.self] = BaseScaleComponent(baseScale: marsUSDZ.scale)
             
             marsUSDZ.name = "Mars"
             
@@ -653,6 +658,7 @@ struct ImmersiveView: View {
             
             let jupiterUSDZ = try await loadUSDZAsync(name: "Jupiter")
             jupiterUSDZ.scale = .init(repeating: 0.22)
+            jupiterUSDZ.components[BaseScaleComponent.self] = BaseScaleComponent(baseScale: jupiterUSDZ.scale)
             
             jupiterUSDZ.name = "Jupiter"
             
@@ -705,7 +711,7 @@ struct ImmersiveView: View {
             
             let jupiterOrbitLine = generateOrbitLine(
                 radius: 2.2,
-                inclination: 0.12
+                inclination: 0.04
             )
             
             solarSystemScene.addChild(jupiterUSDZ)
@@ -723,6 +729,7 @@ struct ImmersiveView: View {
             
             let saturnUSDZ = try await loadUSDZAsync(name: "Saturn")
             saturnUSDZ.scale = .init(repeating: 0.20)
+            saturnUSDZ.components[BaseScaleComponent.self] = BaseScaleComponent(baseScale: saturnUSDZ.scale)
                         
             saturnUSDZ.name = "Saturn"
             
@@ -775,7 +782,7 @@ struct ImmersiveView: View {
             
             let saturnOrbitLine = generateOrbitLine(
                 radius: 2.8,
-                inclination: 0.12
+                inclination: 0.18
             )
             
             solarSystemScene.addChild(saturnUSDZ)
@@ -1004,17 +1011,16 @@ struct ImmersiveView: View {
         }
         
         // Apply pulsing scale effect for selected planets
+        let base = entity.components[BaseScaleComponent.self]?.baseScale ?? entity.scale
+
         if isSelected {
-            // Create pulsing animation by varying scale slightly
             let time = Float(Date().timeIntervalSince1970)
-            let pulseAmount = sin(time * 3.0) * 0.03 + 1.08  // Pulse between 1.05 and 1.11
-            entity.scale = SIMD3<Float>(repeating: pulseAmount)
+            let pulse = sin(time * 3.0) * 0.03 + 1.08
+            entity.scale = base * pulse
         } else if intensity > 0.01 {
-            // Subtle scale for hover
-            entity.scale = SIMD3<Float>(repeating: 1.02)
+            entity.scale = base * 1.02
         } else {
-            // Return to normal scale
-            entity.scale = SIMD3<Float>(repeating: 1.0)
+            entity.scale = base
         }
         
         modelComponent.materials = materials
@@ -1395,6 +1401,10 @@ struct ImmersiveView: View {
             // Apply visual effect
             applyHighlightVisual(to: entity, intensity: highlightComponent.currentIntensity)
         }
+    }
+    
+    struct BaseScaleComponent: Component {
+        var baseScale: SIMD3<Float>
     }
     
     private func loadUSDZAsync(
