@@ -422,6 +422,13 @@ struct ImmersiveView: View {
                 inclination: 0.03
             )
             
+            mercuryOrbitLine.components[OrbitLineComponent.self] = OrbitLineComponent(
+                isVisible: appModel.showOrbitLines,
+                lineColor: UIColor(white: 1.0, alpha: 0.3),
+                lineWidth: 0.002
+            )
+            mercuryOrbitLine.isEnabled = appModel.showOrbitLines
+
             solarSystemScene.addChild(mercuryUSDZ)
             solarSystemScene.addChild(mercuryOrbitLine)
             print("🪐 [setupSolarSystem] Created Mercury - radius: \(0.6)m, speed: \(0.175) rad/s, size: \(0.055)m")
@@ -492,6 +499,13 @@ struct ImmersiveView: View {
                 radius: 0.85,
                 inclination: 0.06
             )
+            
+            venusOrbitLine.components[OrbitLineComponent.self] = OrbitLineComponent(
+                isVisible: appModel.showOrbitLines,
+                lineColor: UIColor(white: 1.0, alpha: 0.3),
+                lineWidth: 0.002
+            )
+            venusOrbitLine.isEnabled = appModel.showOrbitLines
             
             solarSystemScene.addChild(venusUSDZ)
             solarSystemScene.addChild(venusOrbitLine)
@@ -571,6 +585,13 @@ struct ImmersiveView: View {
                 inclination: 0.12
             )
             
+            earthOrbitLine.components[OrbitLineComponent.self] = OrbitLineComponent(
+                isVisible: appModel.showOrbitLines,
+                lineColor: UIColor(white: 1.0, alpha: 0.3),
+                lineWidth: 0.002
+            )
+            earthOrbitLine.isEnabled = appModel.showOrbitLines
+            
             // earth.name = "Earth"
             solarSystemScene.addChild(earthUSDZ)
             solarSystemScene.addChild(earthOrbitLine)
@@ -643,6 +664,13 @@ struct ImmersiveView: View {
                 inclination: 0.08
             )
             
+            marsOrbitLine.components[OrbitLineComponent.self] = OrbitLineComponent(
+                isVisible: appModel.showOrbitLines,
+                lineColor: UIColor(white: 1.0, alpha: 0.3),
+                lineWidth: 0.002
+            )
+            marsOrbitLine.isEnabled = appModel.showOrbitLines
+            
             solarSystemScene.addChild(marsUSDZ)
             solarSystemScene.addChild(marsOrbitLine)
             print("🪐 [setupSolarSystem] Created Mars - radius: \(1.5)m, speed: \(0.07) rad/s, size: \(0.065)m")
@@ -714,6 +742,13 @@ struct ImmersiveView: View {
                 inclination: 0.04
             )
             
+            jupiterOrbitLine.components[OrbitLineComponent.self] = OrbitLineComponent(
+                isVisible: appModel.showOrbitLines,
+                lineColor: UIColor(white: 1.0, alpha: 0.3),
+                lineWidth: 0.002
+            )
+            jupiterOrbitLine.isEnabled = appModel.showOrbitLines
+            
             solarSystemScene.addChild(jupiterUSDZ)
             solarSystemScene.addChild(jupiterOrbitLine)
             print("🪐 [setupSolarSystem] Created Jupiter - radius: \(2.2)m, speed: \(0.045) rad/s, size: \(0.16)m")
@@ -784,6 +819,13 @@ struct ImmersiveView: View {
                 radius: 2.8,
                 inclination: 0.18
             )
+            
+            saturnOrbitLine.components[OrbitLineComponent.self] = OrbitLineComponent(
+                isVisible: appModel.showOrbitLines,
+                lineColor: UIColor(white: 1.0, alpha: 0.3),
+                lineWidth: 0.002
+            )
+            saturnOrbitLine.isEnabled = appModel.showOrbitLines
             
             solarSystemScene.addChild(saturnUSDZ)
             solarSystemScene.addChild(saturnOrbitLine)
